@@ -2,7 +2,7 @@ from __init__ import db
 from datetime import datetime, timezone, timedelta
 
 # Singapore time zone UTC+8
-sg_time = timezone(timedelta(hours=8))
+sg_time = datetime.now(timezone(timedelta(hours=8)))
 
 class Transcription(db.Model):
     __tablename__ = "Transcription"

@@ -1,6 +1,8 @@
 from flask import jsonify, Blueprint, request
+from __init__ import db
 from models.Audio import Audio
 from models.Transcription import Transcription
+from utils import whispertiny
 
 transcribe_routes = Blueprint('transcibe', __name__)
 
@@ -34,6 +36,60 @@ def get_all_transcriptions():
         return jsonify(
             {
                 "message": f'Failed to retrieve transcriptions!',
+                "error" : str(e)
+            }
+        ), 500
+
+@transcribe_routes.route('/transcribe', methods=['POST'])
+def process_audio_file():
+    try:
+        # get the list of files from form data in the request payload
+        file_list = request.files.getlist('audioFiles')
+
+        uploaded_files = []
+        failed_files = [file.filename for file in file_list]
+
+        # loop through each audio file to be passed into the ml model
+        for file in file_list:
+            uploaded_filename = file.filename
+            file_content = file.read()
+            # create Audio object and store in Audio table
+            new_audio = Audio(
+                filename = uploaded_filename,
+                file_data = file_content
+            )
+            db.session.add(new_audio)
+            db.session.flush()
+            # send the audio file to the ml model
+            text = whispertiny.transcribe_text(file_content)
+
+            # create Transcription object and store in Transcription table
+            new_transcription = Transcription(
+                file_id = new_audio.id,
+                transcribed_text = text['text']
+            )
+            db.session.add(new_transcription)
+
+            # commit into the db
+            db.session.commit()
+
+            # update the file lists
+            uploaded_files.append(uploaded_filename)
+            failed_files.remove(uploaded_filename)
+
+        return jsonify(
+            {
+                "message": "Successfully uploaded audio files!",
+                "data": uploaded_files
+            }
+        ), 200
+    except Exception as e:
+        # undo db changes
+        db.session.rollback()
+        return jsonify(
+            {
+                "message": f'Failed to upload all audio files!',
+                "failed_files" : failed_files,
                 "error" : str(e)
             }
         ), 500
