@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # setup cors and crsf
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 cors = CORS(app, origins='*')
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -21,5 +21,6 @@ db = SQLAlchemy(app)
 from models import Audio, Transcription
 
 # register blueprints (API routes)
-from routes import health
+from routes import health, transcribe
 app.register_blueprint(health.health_routes)
+app.register_blueprint(transcribe.transcribe_routes)

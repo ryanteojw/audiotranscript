@@ -12,4 +12,4 @@ class Audio(db.Model):
     file_data = db.Column(db.LargeBinary, nullable=False)
     created_time = db.Column(db.DateTime, default=sg_time)
 
-    transcription = db.relationship("Transcription", backref=db.backref("audio", uselist=False), uselist=False)
+    transcription = db.relationship("Transcription", backref=db.backref("audio_files", uselist=False), uselist=False)

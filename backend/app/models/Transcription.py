@@ -12,4 +12,4 @@ class Transcription(db.Model):
     transcribed_text = db.Column(db.Text, nullable=False)
     created_time = db.Column(db.DateTime, default=sg_time)
 
-    audio = db.relationship("Audio", backref=db.backref("Transcription", uselist=False), uselist=False)
+    audio = db.relationship("Audio", backref=db.backref("audio_transcription", uselist=False), uselist=False)
