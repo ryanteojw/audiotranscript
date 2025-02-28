@@ -1,4 +1,4 @@
-from __init__ import app, db
+from app import app, db
 
 # create tables 
 with app.app_context():

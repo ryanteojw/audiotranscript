@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, request
-from __init__ import db
-from models.Audio import Audio
-from models.Transcription import Transcription
+from app import db
+from ..models.Audio import Audio
+from ..models.Transcription import Transcription
 import json, base64
 
 search_routes = Blueprint('search', __name__)

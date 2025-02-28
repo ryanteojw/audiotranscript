@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint
-from __init__ import db
+from app import db
 from sqlalchemy import text
 import json
 

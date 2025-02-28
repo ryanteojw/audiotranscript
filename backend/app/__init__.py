@@ -18,10 +18,10 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = SQLAlchemy(app)
 
 # import models
-from models import Audio, Transcription
+from .models import Audio, Transcription
 
 # register blueprints (API routes)
-from routes import health, transcribe, search
+from .routes import health, transcribe, search
 app.register_blueprint(health.health_routes)
 app.register_blueprint(transcribe.transcribe_routes)
 app.register_blueprint(search.search_routes)

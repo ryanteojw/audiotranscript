@@ -1,8 +1,8 @@
 from flask import jsonify, Blueprint, request
-from __init__ import db
-from models.Audio import Audio
-from models.Transcription import Transcription
-from utils import whispertiny
+from app import db
+from ..models.Audio import Audio
+from ..models.Transcription import Transcription
+from ..utils import whispertiny
 import json, base64
 
 transcribe_routes = Blueprint('transcibe', __name__)
