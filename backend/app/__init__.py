@@ -21,6 +21,7 @@ db = SQLAlchemy(app)
 from models import Audio, Transcription
 
 # register blueprints (API routes)
-from routes import health, transcribe
+from routes import health, transcribe, search
 app.register_blueprint(health.health_routes)
 app.register_blueprint(transcribe.transcribe_routes)
+app.register_blueprint(search.search_routes)
