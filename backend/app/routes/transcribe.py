@@ -3,6 +3,7 @@ from __init__ import db
 from models.Audio import Audio
 from models.Transcription import Transcription
 from utils import whispertiny
+import json, base64
 
 transcribe_routes = Blueprint('transcibe', __name__)
 
@@ -18,8 +19,14 @@ def get_all_transcriptions():
             # temp dictionary to store all the relevant data
             transcription_dict = {}
             transcription_dict["id"] = transcription.id
-            transcription_dict["filename"] = Audio.query.get(transcription.file_id).filename
-            transcription_dict["file_data"] = Audio.query.get(transcription.file_id).file_data
+
+            audio_filename = Audio.query.get(transcription.file_id).filename
+            transcription_dict["filename"] = audio_filename
+
+            audio_file = Audio.query.get(transcription.file_id).file_data
+            # convert binary data to base64 string
+            transcription_dict["file_data"] = f"data:audio/{audio_filename[-3:]};base64,{base64.b64encode(audio_file).decode('utf-8')}"
+
             transcription_dict["transcribed_text"] = transcription.transcribed_text
             transcription_dict["uploaded_timestamp"] = Audio.query.get(transcription.file_id).created_time
             transcription_dict["finished_processing_timestamp"] = transcription.created_time
