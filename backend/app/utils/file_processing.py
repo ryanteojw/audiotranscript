@@ -9,6 +9,9 @@ def single_file_processing(file):
         uploaded_filename = file.filename
         file_content = file.read()
 
+        # send the audio file to the ml model
+        text = whispertiny.transcribe_text(file_content)
+
         # create Audio object and store in Audio table
         new_audio = Audio (
             filename = uploaded_filename,
@@ -17,9 +20,6 @@ def single_file_processing(file):
         
         db.session.add(new_audio)
         db.session.flush()
-
-        # send the audio file to the ml model
-        text = whispertiny.transcribe_text(file_content)
 
         # create Transcription object and store in Transcription table
         new_transcription = Transcription (
