@@ -1,0 +1,12 @@
+services:
+  flask_app:
+    build: .                       
+    ports:
+      - "5000:5000"                 
+    volumes:
+      - .:/app                      
+      - ./audio_db.db:/app/audio_db.db
+    environment:
+      - FLASK_APP=run.py            
+      - FLASK_RUN_HOST=0.0.0.0      
+    restart: always                
