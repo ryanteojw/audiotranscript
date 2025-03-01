@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS, cross_origin
-from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 from config import Config
 
 app = Flask(__name__)
@@ -9,8 +8,7 @@ app = Flask(__name__)
 # db configuration
 app.config.from_object(Config)
 
-# setup cors and crsf
-# csrf = CSRFProtect(app)
+# setup cors
 cors = CORS(app, origins='*')
 app.config['CORS_HEADERS'] = 'Content-Type'
 

@@ -1,7 +1,6 @@
 from flask import jsonify, Blueprint
 from app import db
 from sqlalchemy import text
-import json
 
 health_routes = Blueprint('health', __name__)
 

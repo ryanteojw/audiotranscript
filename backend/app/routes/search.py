@@ -2,7 +2,7 @@ from flask import jsonify, Blueprint, request
 from app import db
 from ..models.Audio import Audio
 from ..models.Transcription import Transcription
-import json, base64
+import base64
 
 search_routes = Blueprint('search', __name__)
 
@@ -34,6 +34,7 @@ def get_audio_file():
         
         return jsonify(
             {
+                "status": "success",
                 "message": "Successfully retrieved filtered data!",
                 "data": filtered_list
             }
@@ -41,6 +42,7 @@ def get_audio_file():
     except Exception as e:
         return jsonify(
             {
+                "status": "fail",
                 "message": f'Failed to retrieve audio file!',
                 "error" : str(e)
             }

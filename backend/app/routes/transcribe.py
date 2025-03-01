@@ -2,8 +2,8 @@ from flask import jsonify, Blueprint, request
 from app import db
 from ..models.Audio import Audio
 from ..models.Transcription import Transcription
-from ..utils import whispertiny
-import json, base64
+from ..utils import file_processing
+import base64
 
 transcribe_routes = Blueprint('transcibe', __name__)
 
@@ -35,6 +35,7 @@ def get_all_transcriptions():
         
         return jsonify(
             {
+                "status": "success",
                 "message": "Successfully retrieved data!",
                 "data": transcription_list
             }
@@ -42,7 +43,8 @@ def get_all_transcriptions():
     except Exception as e:
         return jsonify(
             {
-                "message": f'Failed to retrieve transcriptions!',
+                "status": "fail",
+                "message": 'Failed to retrieve transcriptions!',
                 "error" : str(e)
             }
         ), 500
@@ -54,38 +56,30 @@ def process_audio_file():
         file_list = request.files.getlist('audioFiles')
 
         uploaded_files = []
-        failed_files = [file.filename for file in file_list]
+        failed_files = []
 
         # loop through each audio file to be passed into the ml model
         for file in file_list:
-            uploaded_filename = file.filename
-            file_content = file.read()
-            # create Audio object and store in Audio table
-            new_audio = Audio(
-                filename = uploaded_filename,
-                file_data = file_content
-            )
-            db.session.add(new_audio)
-            db.session.flush()
-            # send the audio file to the ml model
-            text = whispertiny.transcribe_text(file_content)
-
-            # create Transcription object and store in Transcription table
-            new_transcription = Transcription(
-                file_id = new_audio.id,
-                transcribed_text = text['text']
-            )
-            db.session.add(new_transcription)
-
-            # commit into the db
-            db.session.commit()
+            # call the helper function single_file_processing defined in utils folder
+            uploaded_filename, error = file_processing.single_file_processing(file)
 
             # update the file lists
-            uploaded_files.append(uploaded_filename)
-            failed_files.remove(uploaded_filename)
+            if uploaded_filename:
+                uploaded_files.append(uploaded_filename)
+            else:
+                failed_files.append(file.filename)
 
+        if len(failed_files) > 0:
+            return jsonify(
+                {
+                    "status": "fail",
+                    "message": "Failed to upload these audio files!",
+                    "data": failed_files
+                }
+            ), 400
         return jsonify(
             {
+                "status": "success",
                 "message": "Successfully uploaded audio files!",
                 "data": uploaded_files
             }
@@ -95,8 +89,8 @@ def process_audio_file():
         db.session.rollback()
         return jsonify(
             {
-                "message": f'Failed to upload all audio files!',
-                "failed_files" : failed_files,
+                "status": "fail",
+                "message": 'Failed to upload all audio files!',
                 "error" : str(e)
             }
         ), 500
