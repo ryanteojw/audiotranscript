@@ -105,7 +105,7 @@
                     <audio :src="record.file_data" controls></audio>
                   </td>
                   <td class="border text-center">{{ record.transcribed_text }}</td>
-                  <td class="border text-center">{{ record.uploaded_timestamp.slice(5, 16) + " " + record.uploaded_timestamp.slice(17, 25) }}</td>
+                  <td class="border text-center">{{ record.uploaded_timestamp ? record.uploaded_timestamp.slice(5, 16) + " " + record.uploaded_timestamp.slice(17, 25) : ""}}</td>
                 </tr>
               </tbody>
             </table>
