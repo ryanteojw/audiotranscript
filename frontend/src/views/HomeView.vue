@@ -89,7 +89,7 @@
           <!-- audio data table -->
           <div class="table-responsive mb-3" style="max-height: 475px; overflow-y: auto;">
             <table v-if="dbRecords.length > 0" class="table table-striped table-bordered">
-              <thead class="text-center bg-primary text-white">
+              <thead class="text-center">
                 <tr>
                   <th class="py-3" style="width: 15%;">Filename</th>
                   <th class="py-3" style="width: 20%;">Audio</th>
@@ -100,12 +100,12 @@
               <tbody>
                 <tr v-for="(record, index) in dbRecords" :key="index">
                   <td class="border text-center">{{ record.filename }}</td>
-                  <td class="border text-center d-flex align-items-center justify-content-center">
+                  <td class="border text-center">
                     <!-- display the audio file -->
                     <audio :src="record.file_data" controls></audio>
                   </td>
                   <td class="border text-center">{{ record.transcribed_text }}</td>
-                  <td class="border text-center">{{ record.uploaded_timestamp }}</td>
+                  <td class="border text-center">{{ record.uploaded_timestamp.slice(5, 16) + " " + record.uploaded_timestamp.slice(17, 25) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -143,6 +143,7 @@ export default {
         const response = await fetch(getAllTranscriptions);
         const data = await response.json();
         this.dbRecords = data.data; 
+        console.log(this.dbRecords[0].uploaded_timestamp);
       } catch (error) {
         console.error("error fetching data:", error);
       }
@@ -176,9 +177,11 @@ export default {
       this.files.splice(index, 1);
 
       // update text displayed next to choose files button
-      const dataTransfer = new DataTransfer();
-      this.files.forEach(file => dataTransfer.items.add(file));
-      this.$refs.fileInput.files = dataTransfer.files;
+      if (typeof DataTransfer !== 'undefined') {
+        const dataTransfer = new DataTransfer();
+        this.files.forEach(file => dataTransfer.items.add(file));
+        this.$refs.fileInput.files = dataTransfer.files;
+      }
     },
     async uploadFiles() {
       this.isUploadLoading = true;
