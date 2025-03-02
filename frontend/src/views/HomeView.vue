@@ -216,6 +216,7 @@ export default {
         console.log(error);
       }
       finally {
+        this.fetchData();
         this.isUploadLoading = false;
         this.uploadedFiles = [];
         this.files = [];
